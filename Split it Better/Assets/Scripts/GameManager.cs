@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField] GameObject squarePref;
     [SerializeField] Transform fieldHolder;
 
+    GameMenuManager menuManager;
+
     SpriteRenderer[,] field;
 
     Vector2 mouseClickDownPos = -Vector2.one;
@@ -24,13 +26,45 @@ public class GameManager : MonoBehaviour {
 
     List<SelectedRect> selectedRects = new List<SelectedRect>();
 
+    int maxSquare = -1;
+    int minSquare = -1;
+
+    int MaxSquare {
+        get {
+            return maxSquare;
+        }
+        set {
+            maxSquare = value;
+
+            menuManager.SetMaxMin(maxSquare, minSquare);
+        }
+    }
+
+    int MinSquare {
+        get {
+            return minSquare;
+        }
+        set {
+            minSquare = value;
+
+            menuManager.SetMaxMin(maxSquare, minSquare);
+        }
+    }
+
     public Vector2Int Size {
         get {
             return size;
         }
+        set {
+            size = value;
+
+            SetField();
+        }
     }
 
     private void Start() {
+        menuManager = GetComponent<GameMenuManager>();
+
         SetField();
     }
 
@@ -54,8 +88,15 @@ public class GameManager : MonoBehaviour {
         }
 
         if (size.x < 3 || size.y < 3) {
-            size.x = 3;
-            size.y = 3;
+            return;
+        }
+
+        if (field != null && field.Length > 0){
+            for (int x = 0; x < field.GetLength(0); x++) {
+                for (int y = 0; y < field.GetLength(1); y++) {
+                    Destroy(field[x, y].gameObject);
+                }
+            }
         }
 
         field = new SpriteRenderer[size.x, size.y];
@@ -72,6 +113,9 @@ public class GameManager : MonoBehaviour {
                 field[x, y] = go.GetComponent<SpriteRenderer>();
             }
         }
+
+        selectedRects = new List<SelectedRect>();
+        rectsToMark = new Queue<SpriteRenderer>();
     }
 
     private void Selection() {
@@ -146,6 +190,8 @@ public class GameManager : MonoBehaviour {
 
         ClearMouseClickPos();
 
+        FindMaxMin();
+
         if (IsCompleted()) {
             Score();
         }
@@ -162,6 +208,9 @@ public class GameManager : MonoBehaviour {
                 SetRectsToDefault(selectedRects[i].TopLeft, selectedRects[i].BottomRight);
 
                 selectedRects.RemoveAt(i);
+
+                FindMaxMin();
+
                 return;
             }
         }
@@ -265,11 +314,21 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Score() {
-        int max = selectedRects.Max((obj) => obj.Square);
-        int min = selectedRects.Min((obj) => obj.Square);
+        Debug.Log($"Score: {MaxSquare - MinSquare}; Max: {MaxSquare}; Min:{MinSquare}");
 
-        Debug.Log($"Score: {max - min}; Max: {max}; Min:{min}");
+        ScoreManager.Add(size, MaxSquare - MinSquare);
+        menuManager.SetScore(MaxSquare, MinSquare);
+    }
 
-        ScoreManager.Add(size, max - min);
+    private void FindMaxMin() {
+        if (selectedRects.Count == 0) {
+            MaxSquare = 0;
+            MinSquare = 0;
+
+            return;
+        }
+
+        MaxSquare = selectedRects.Max((obj) => obj.Square);
+        MinSquare = selectedRects.Min((obj) => obj.Square);
     }
 }
