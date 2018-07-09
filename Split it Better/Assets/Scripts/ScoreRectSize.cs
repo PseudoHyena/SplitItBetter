@@ -3,22 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class ScoreRectSize : IComparable {
 
     public ScoreRectSize(Vector2Int size) {
-        Size = size;
+        x = size.x;
+        y = size.y;
     }
 
-    public Vector2Int Size { get; set; }
+    public int x { get; set; }
+    public int y { get; set; }
 
     public int CompareTo(object obj) {
         ScoreRectSize scoreItem = obj as ScoreRectSize;
 
-        if (Size.x == scoreItem.Size.x && Size.y == scoreItem.Size.y ||
-            Size.x == scoreItem.Size.y && Size.y == scoreItem.Size.x) {
+        if (x == scoreItem.x && y == scoreItem.y ||
+            x == scoreItem.y && y == scoreItem.x) {
             return 0;
         }
-        else if (Size.x * Size.y < scoreItem.Size.x * scoreItem.Size.y) {
+        else if (x * y < scoreItem.x * scoreItem.y) {
             return -1;
         }
         else {

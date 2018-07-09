@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour {
         Selection();
     }
 
+    private void OnApplicationQuit() {
+        ScoreManager.SaveScore();
+    }
+
     private void SetField() {
         if (squarePref == null) {
             Debug.Log("GameManager: Sprite prefab is mised");
