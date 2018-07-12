@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour {
 
     [SerializeField] Vector2Int size;
 
+    [SerializeField] Vector2Int maxSize = new Vector2Int(100, 100);
+
     [SerializeField] [Range(0f, 1f)] float HSVSaturationMin;
     [SerializeField] [Range(0f, 1f)] float HSVSaturationMax;
     [SerializeField] [Range(0f, 1f)] float HSVValueMin;
@@ -62,6 +64,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public Vector2Int MaxSize {
+        get {
+            return maxSize;
+        }
+    }
+
     private void Start() {
         menuManager = GetComponent<GameMenuManager>();
 
@@ -87,7 +95,7 @@ public class GameManager : MonoBehaviour {
             return;
         }
 
-        if (size.x < 3 || size.y < 3) {
+        if (size.x < 3 || size.y < 3 || size.x > maxSize.x || size.y > maxSize.y) {
             return;
         }
 

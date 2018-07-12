@@ -11,6 +11,8 @@ public class GameMenuManager : MonoBehaviour {
     [SerializeField] TextMeshProUGUI lastScoreText;
     [SerializeField] TextMeshProUGUI maxText;
     [SerializeField] TextMeshProUGUI minText;
+    [SerializeField] TMP_InputField XText;
+    [SerializeField] TMP_InputField YText;
 
     GameManager gameManager;
 
@@ -55,6 +57,11 @@ public class GameMenuManager : MonoBehaviour {
             x = 3;
         }
 
+        if (x > gameManager.MaxSize.x) {
+            XText.text = gameManager.MaxSize.x.ToString();
+            x = gameManager.MaxSize.x;
+        }
+
         gameManager.Size = new Vector2Int(x, gameManager.Size.y);
 
         SetScore(0, 0);
@@ -72,6 +79,12 @@ public class GameMenuManager : MonoBehaviour {
             y = 3;
         }
 
+
+        if (y > gameManager.MaxSize.y) {
+            YText.text = gameManager.MaxSize.x.ToString();
+            y = gameManager.MaxSize.y;
+        }
+
         gameManager.Size = new Vector2Int(gameManager.Size.x, y);
 
         SetScore(0, 0);
@@ -79,7 +92,7 @@ public class GameMenuManager : MonoBehaviour {
 
     private void ToggleMenu() {
         if (Input.GetButtonDown("Cancel")) {
-            isMenuActive = isMenuActive ? false : true;
+            isMenuActive = !isMenuActive;
             menuAnim.SetBool("Active", isMenuActive);
         }
     }

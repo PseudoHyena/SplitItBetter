@@ -5,46 +5,46 @@ using UnityEngine;
 
 public static class ScoreManager {
 
-    static SortedDictionary<ScoreRectSize, int> fullScore;
-
     static bool isSaved = true;
 
+    static public SortedDictionary<ScoreRectSize, int> FullScore { get; private set; }
+
     public static void Add(Vector2Int size, int score) {
-        if (fullScore == null || score <= 0) {
+        if (FullScore == null || score <= 0) {
             return;
         }
 
         ScoreRectSize scoreRectSize = new ScoreRectSize(size);
 
-        if (fullScore.ContainsKey(scoreRectSize)) {
-            if (fullScore[scoreRectSize] > score) {
-                fullScore[scoreRectSize] = score;
+        if (FullScore.ContainsKey(scoreRectSize)) {
+            if (FullScore[scoreRectSize] > score) {
+                FullScore[scoreRectSize] = score;
             }
         }
         else {
-            fullScore.Add(scoreRectSize, score);
+            FullScore.Add(scoreRectSize, score);
         }
 
         isSaved = false;
     }
 
     public static int Score(Vector2Int size) {
-        if (fullScore == null) {
+        if (FullScore == null) {
             return -1;
         }
 
         ScoreRectSize scoreRectSize = new ScoreRectSize(size);
 
-        return fullScore.ContainsKey(scoreRectSize) ? fullScore[scoreRectSize] : -1;
+        return FullScore.ContainsKey(scoreRectSize) ? FullScore[scoreRectSize] : -1;
     }
 
     static public void ReadScore() {
-        if (fullScore != null) {
+        if (FullScore != null) {
             return;
         }
 
         if (!File.Exists("Score.dat")) {
-            fullScore = new SortedDictionary<ScoreRectSize, int>();
+            FullScore = new SortedDictionary<ScoreRectSize, int>();
             
             return;
         }
@@ -52,12 +52,12 @@ public static class ScoreManager {
         BinaryFormatter binaryFormatter = new BinaryFormatter();
 
         using (FileStream fs = new FileStream("Score.dat", FileMode.Open)) {
-             fullScore = binaryFormatter.Deserialize(fs) as SortedDictionary<ScoreRectSize, int>;
+             FullScore = binaryFormatter.Deserialize(fs) as SortedDictionary<ScoreRectSize, int>;
         }
     }
 
     static public void SaveScore() {
-        if (fullScore == null || fullScore.Count == 0) {
+        if (FullScore == null || FullScore.Count == 0) {
             isSaved = true;
 
             return;
@@ -70,7 +70,7 @@ public static class ScoreManager {
         BinaryFormatter binaryFormatter = new BinaryFormatter();
 
         using (FileStream fs = new FileStream("Score.dat", FileMode.Create)) {
-            binaryFormatter.Serialize(fs, fullScore);
+            binaryFormatter.Serialize(fs, FullScore);
         }
 
         isSaved = true;
